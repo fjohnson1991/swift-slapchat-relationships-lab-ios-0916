@@ -12,6 +12,7 @@ import CoreData
 class DataStore {
     
     var messages:[Message] = []
+    var recipientArray = [Recipient]()
     
     static let sharedInstance = DataStore()
     
@@ -67,8 +68,12 @@ class DataStore {
     func fetchData() {
         let context = persistentContainer.viewContext
         let messagesRequest: NSFetchRequest<Message> = Message.fetchRequest()
+        let recipientRequest: NSFetchRequest<Recipient> = Recipient.fetchRequest()
         
         do {
+            
+            self.recipientArray = try context.fetch(recipientRequest)
+
             messages = try context.fetch(messagesRequest)
             messages.sort(by: { (message1, message2) -> Bool in
                 let date1 = message1.createdAt! as Date
@@ -81,9 +86,10 @@ class DataStore {
         }
         
         if messages.count == 0 {
-            generateTestData()
+//            generateTestData()
         }
     }
+
     
     // MARK: - Core Data generation of test data
     

@@ -7,19 +7,25 @@
 //
 
 import UIKit
+import CoreData
 
 class TableViewController: UITableViewController {
     
     var store = DataStore.sharedInstance
+    var recipient: Recipient!
+    var recipientMessages = [Message]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        recipientMessages = recipient.message?.allObjects as! [Message]
         store.fetchData()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         
         super.viewWillAppear(true)
+        
+        recipientMessages = recipient.message?.allObjects as! [Message]
         
         store.fetchData()
         tableView.reloadData()
@@ -33,18 +39,25 @@ class TableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return store.messages.count
+        return recipientMessages.count
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "basicCell", for: indexPath)
 
-        let eachMessage = store.messages[indexPath.row]
+        let eachMessage = recipientMessages[indexPath.row]
         
         cell.textLabel?.text = eachMessage.content
 
+
         return cell
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        print("add message")
+        let destination = segue.destination as! AddMessageViewController
+        destination.recipient = recipient
     }
     
 }
